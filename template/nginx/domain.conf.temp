@@ -1,0 +1,23 @@
+upstream backend_{{.Domain}} {
+    {{range .RealServers}}server {{.Ip}}:{{.Port}} weight={{if .Weight}}{{.Weight}}{{else}}10{{end}} max_fails=2 fail_timeout={{if .FailTimeout}}{{.FailTimeout}}{{else}}30{{end}}s;
+    {{end}}
+}
+
+server {
+    listen                   80;
+    server_name              {{.Domain}};
+    access_log /export/servers/nginx/logs/{{.Domain}}/access.log main;
+    error_log /export/servers/nginx/logs/{{.Domain}}/error.log warn;
+    root /export/App/{{.Domain}}/;
+    location / {
+        proxy_next_upstream     http_500 http_502 http_503 http_504 error timeout invalid_header;
+        proxy_set_header        Host  $host;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass              http://backend_{{.Domain}};
+        expires                 0;
+    }
+    location /logs/ {
+        autoindex       off;
+        deny all;
+    }
+}
