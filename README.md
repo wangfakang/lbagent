@@ -16,11 +16,14 @@ nginx负载均衡agent
 
 ###其他
 **测试**
+
 当前只在ubuntu server上测试过
 
 **domain配置模板**
+
 目录 template/nginx
 
 **依赖**
+
   github.com/siddontang/go-log/log
   github.com/ant0ine/go-json-rest/rest
